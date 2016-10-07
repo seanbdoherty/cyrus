@@ -20,10 +20,45 @@ var connector = new builder.ChatConnector({
 var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
+// Connect to yahoo fantasy
+var YahooFantasy = require('yahoo-fantasy');
+// you can get an application key/secret by creating a new application on Yahoo!
+var yf = new YahooFantasy(
+  "dj0yJmk9ZWFNU3YxOVRnTUF3JmQ9WVdrOVZHRXdUV1ZRTm1zbWNHbzlNVFU1T0RjNU56WTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD1jZA--",
+  "04e4a60185f9217d3a90c1f55f0d3400a30df2c1"
+);
+
+// if a user has logged in (not required for all endpoints)
+// yf.setUserToken(
+//   Y!CLIENT_TOKEN,
+//   Y!CLIENT_SECRET
+// );
+
+
+
 //=========================================================
 // Bots Dialogs
 //=========================================================
 
-bot.dialog('/', function (session) {
-    session.send("Hello Lance");
-});
+bot.dialog('/', [
+    function (session) {
+        // query a resource/subresource
+        // yf.teams (
+        // {"league_key":'364.l.15190'},
+        // function cb(err, data) {
+        //     // handle error
+        //     // callback function
+        //     // do your thing
+        // }
+        // );
+        builder.Prompts.text(session, 'Hi! What is your name?');
+    },
+    function (session, results) {
+        session.send('Hello %s!', results.response);
+    }
+]);
+
+server.get('/', restify.serveStatic({
+ directory: __dirname,
+ default: '/index.html'
+}));
